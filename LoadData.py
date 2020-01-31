@@ -17,8 +17,10 @@ cA = dbArtists.cursor()
 # Creates tables and then loads data from csv files into tables
 def loadData():
     # Remove previously created tables
+
     cS.execute('''DROP TABLE Songs''')
     cA.execute('''DROP TABLE Artists''')
+
     dbSongs.commit()
     dbArtists.commit()
 
@@ -27,7 +29,7 @@ def loadData():
                   (Rank real PRIMARY KEY, Title text, Artist text, Genre text,
                    Danceability real, Valence real)''')
     cA.execute('''CREATE TABLE Artists
-                  (ArtistName text, AvgDanceability real, AvgValence real, 
+                  (ArtistName text, AvgDanceability real, AvgValence real,
                   FOREIGN KEY(ArtistName) REFERENCES Songs(Artist))''')
     dbSongs.commit()
     dbArtists.commit()
@@ -36,16 +38,16 @@ def loadData():
     with open('Songs.csv') as songsDataFile:
         songsReader = csv.reader(songsDataFile)
         for songsRow in songsReader:
-            cS.execute('''INSERT INTO Songs(Rank, Title, Artist, Genre, 
-                                            Danceability, Valence) 
+            cS.execute('''INSERT INTO Songs(Rank, Title, Artist, Genre,
+                                            Danceability, Valence)
                           VALUES(?,?,?,?,?,?)''', (songsRow[0], songsRow[1],
                                                    songsRow[2], songsRow[3],
                                                    songsRow[4], songsRow[5]))
     with open('Artists.csv') as artistsDataFile:
         artistsReader = csv.reader(artistsDataFile)
         for artistsRow in artistsReader:
-            cA.execute('''INSERT INTO Artists(ArtistName, AvgDanceability, 
-                                              AvgValence) 
+            cA.execute('''INSERT INTO Artists(ArtistName, AvgDanceability,
+                                              AvgValence)
                           VALUES (?,?,?)''', (artistsRow[0], artistsRow[1],
                                               artistsRow[2]))
     dbSongs.commit()
@@ -53,6 +55,28 @@ def loadData():
     return
 
 
+
+
+def sqlQuery(column, key, val):
+
+    songCols = ['Rank', 'Title', 'Artist', 'Genre', 'Danceability', 'Valence']
+    artistCols = ['ArtistName', 'AvgDanceability', 'AvgValence']
+
+    if key in songCols and column in songCols:
+        table = "songs"
+        print("determined table songs")
+    elif key in artistCols and column in artistCols:
+        table = "artist"
+        print("determined table artist")
+
+    f = cS.execute("SELECT "+column+" FROM "+table+" WHERE upper("+key+") = upper(\'"+val+"\')")
+
+    rows = cS.fetchall()
+    for row in rows:
+        print(row[0])
+
 loadData()
+sqlQuery("Title","Artist", "ed Sheeran")
+
 dbSongs.close()
 dbArtists.close()
