@@ -1,7 +1,6 @@
 # This program connects to two SQLite databases, one for songs and one
-# for artists, creates tables for each database, reads in data from csv
-# files into arrays, and then inserts the data stored in the arrays into
-# the appropriate table.
+# for artists, creates tables for each database, and then loops through
+# csv files to insert the data into the the appropriate table.
 
 import sqlite3
 import csv
@@ -15,6 +14,7 @@ cS = dbSongs.cursor()
 cA = dbArtists.cursor()
 
 
+# Creates tables and then loads data from csv files into tables
 def loadData():
     # Remove previously created tables
     cS.execute('''DROP TABLE Songs''')
@@ -32,31 +32,22 @@ def loadData():
     dbSongs.commit()
     dbArtists.commit()
 
-    # Read in csv file data into arrays
-    songsArray = []
-    with open('SongsClean.csv') as songsDataFile:
+    # Insert csv file data into tables
+    with open('Songs.csv') as songsDataFile:
         songsReader = csv.reader(songsDataFile)
-        for row in songsReader:
-            print(row)
-            songsArray.append(row)
-    print()
-    artistsArray = []
-    with open('ArtistsClean.csv') as artistsDataFile:
+        for songsRow in songsReader:
+            cS.execute('''INSERT INTO Songs(Rank, Title, Artist, Genre, 
+                                            Danceability, Valence) 
+                          VALUES(?,?,?,?,?,?)''', (songsRow[0], songsRow[1],
+                                                   songsRow[2], songsRow[3],
+                                                   songsRow[4], songsRow[5]))
+    with open('Artists.csv') as artistsDataFile:
         artistsReader = csv.reader(artistsDataFile)
-        for row in artistsReader:
-            print(row)
-            artistsArray.append(row)
-
-    # Insert data into tables
-    for songRow in songsArray:
-        cS.execute('''INSERT INTO Songs(Rank, Title, Artist, Genre, Danceability,
-                      Valence) VALUES(?,?,?,?,?,?)''', (songRow[0], songRow[1],
-                                                        songRow[2], songRow[3],
-                                                        songRow[4], songRow[5]))
-    for artistsRow in artistsArray:
-        cA.execute('''INSERT INTO Artists(ArtistName, AvgDanceability, AvgValence) 
-                      VALUES (?,?,?)''', (artistsRow[0], artistsRow[1],
-                                          artistsRow[2]))
+        for artistsRow in artistsReader:
+            cA.execute('''INSERT INTO Artists(ArtistName, AvgDanceability, 
+                                              AvgValence) 
+                          VALUES (?,?,?)''', (artistsRow[0], artistsRow[1],
+                                              artistsRow[2]))
     dbSongs.commit()
     dbArtists.commit()
     return
