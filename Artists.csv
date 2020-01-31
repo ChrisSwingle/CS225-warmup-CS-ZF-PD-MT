@@ -1,4 +1,4 @@
-ArtistName,Danceability,Valence
+ArtistName,AvgDanceability,AvgValence
 Ali Gatie,0.73,0.39
 Anuel AA,0.78,0.6
 Ariana Grande,0.77,0.32
