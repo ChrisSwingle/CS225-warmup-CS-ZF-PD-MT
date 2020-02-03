@@ -51,6 +51,23 @@ def loadData():
         db.commit()
         return
 
+def sqlQuery(column, key, val):
+
+    songCols = ['Rank', 'Title', 'Artist', 'Genre', 'Danceability', 'Valence']
+    artistCols = ['ArtistName', 'AvgDanceability', 'AvgValence']
+
+    if key in songCols and column in songCols:
+        table = "songs"
+        print("determined table songs")
+    elif key in artistCols and column in artistCols:
+        table = "artist"
+        print("determined table artist")
+
+    f = c.execute("SELECT "+column+" FROM "+table+" WHERE upper("+key+") = upper(\'"+val+"\')")
+
+    rows = c.fetchall()
+    for row in rows:
+        print(row[0])
 
 loadData()
 db.close()
