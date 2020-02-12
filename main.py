@@ -68,23 +68,7 @@ def parse(userInput):
             #Standardize capitalization of column.
             column = column.lower()
             column = column.capitalize()
-        #This logic will be for searches in the Artists Datatable
-        # elif len(splitOnQuotes) == 5:
-        #     #Split on spaces
-        #     divList1=splitOnQuotes[0].split()
-        #     column = divList1[0]
-        #     foreignKey = divList1[2]
-        #     foreignVal = splitOnQuotes[1]
-        #     divList2=splitOnQuotes[2].split()
-        #     key = divList2[1]
-        #     value = splitOnQuotes[3]
-        #     #Standardize foreignKey
-        #     foreignKey = foreignKey.lower()
-        #     foreignKey = foreignKey.capitalize()
-        #     #Adjust for Synonyms
-        #     if foreignKey == "Singer" or foreignKey == "Artists" or foreignKey == "Author":
-        #         foreignKey = "Artist"
-        #Standardize capitalization among variables. The key will remain unchanged
+
         key = key.lower()
         key = key.capitalize()
         sys.stdout.write(column)
@@ -107,16 +91,8 @@ def parse(userInput):
         #This makes user of short circuit evaluation
         sys.stdout.write(column)
         if((len(splitOnQuotes)==3 ) and ( validateCol(column) and validateKey(key))):
-            sys.stdout.write("sqlQuery called with the following parameters:"+ column + "," + key +
-            "," + value + "\n")
+            # sys.stdout.write("sqlQuery called with the following parameters:"+ column + "," + key +"," + value + "\n")
             sqlQuery(column, key, value)
-        #Validate that inputs are valid
-        #Only way to access Artist table is though foreign key, so this will require foreignKey to be "Artist"
-        #and the value to be "Title"
-        # elif((len(splitOnQuotes)==5) and ((foreignKey == "Artist") and (key=="Title") and validateCol(column))):
-        #     sys.stdout.write("sqlQuery called with following paramerters:" + column + "," + foreignKey +
-        #     "," + foreignVal + "," + key + ","+ value+"\n\n")
-        #     sqlQuery(column, foreignKey, foreignVal)
 
         #If this point is reached, Input is invalid
         else:
@@ -195,15 +171,19 @@ def loadData():
 # data
 def sqlQuery(column, key, val):
     songCols = ['Rank', 'Title', 'Artist', 'Genre', 'Danceability', 'Valence']
-    artistCols = ['ArtistName', 'AvgDanceability', 'AvgValence']
+    artistCols = ['Artist', 'AvgDanceability', 'AvgValence']
 
     # Determine correct table to search in given user input
     if key in songCols and column in songCols:
         table = "songs"
-        print("determined table songs")
+        # print("determined table songs")
     elif key in artistCols and column in artistCols:
-        table = "artist"
-        print("determined table artist")
+        table = "artists"
+        # print("determined table artist")
+        if column == "Artist":
+            column = "ArtistName"
+        if key == "Artist":
+            key = "ArtistName"
 
     # Convert to valid SQL statement to fetch correct information from database
     f = c.execute("SELECT "+column+" FROM "+table+" WHERE upper("+key+") = upper(\'"+val+"\')")
