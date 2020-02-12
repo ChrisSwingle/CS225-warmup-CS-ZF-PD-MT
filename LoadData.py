@@ -14,7 +14,6 @@ dbArtists = sqlite3.connect('Artists.db')
 cS = dbSongs.cursor()
 cA = dbArtists.cursor()
 
-
 def loadData():
     # Remove previously created tables
     cS.execute('''DROP TABLE Songs''')
@@ -27,7 +26,7 @@ def loadData():
                   (Rank real PRIMARY KEY, Title text, Artist text, Genre text,
                    Danceability real, Valence real)''')
     cA.execute('''CREATE TABLE Artists
-                  (ArtistName text, AvgDanceability real, AvgValence real, 
+                  (ArtistName text, AvgDanceability real, AvgValence real,
                   FOREIGN KEY(ArtistName) REFERENCES Songs(Artist))''')
     dbSongs.commit()
     dbArtists.commit()
@@ -54,7 +53,7 @@ def loadData():
                                                         songRow[2], songRow[3],
                                                         songRow[4], songRow[5]))
     for artistsRow in artistsArray:
-        cA.execute('''INSERT INTO Artists(ArtistName, AvgDanceability, AvgValence) 
+        cA.execute('''INSERT INTO Artists(ArtistName, AvgDanceability, AvgValence)
                       VALUES (?,?,?)''', (artistsRow[0], artistsRow[1],
                                           artistsRow[2]))
     dbSongs.commit()
