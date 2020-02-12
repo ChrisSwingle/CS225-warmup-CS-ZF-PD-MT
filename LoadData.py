@@ -12,7 +12,7 @@ db = sqlite3.connect('SongsArtists.db')
 c = db.cursor()
 
 
-# Creates tables and then loads data from csv files into tables
+# loadData() function creates tables and then loads data from csv files into tables
 def loadData():
     # Remove previously created tables if they exist
     try:
@@ -51,11 +51,14 @@ def loadData():
         db.commit()
         return
 
+    
+# sqlQuery() function takes user input, converts to a valid SQL statement, and returns correct
+# data
 def sqlQuery(column, key, val):
-
     songCols = ['Rank', 'Title', 'Artist', 'Genre', 'Danceability', 'Valence']
     artistCols = ['ArtistName', 'AvgDanceability', 'AvgValence']
 
+    # Determine correct table to search in given user input
     if key in songCols and column in songCols:
         table = "songs"
         print("determined table songs")
@@ -63,8 +66,10 @@ def sqlQuery(column, key, val):
         table = "artist"
         print("determined table artist")
 
+    # Convert to valid SQL statement to fetch correct information from database
     f = c.execute("SELECT "+column+" FROM "+table+" WHERE upper("+key+") = upper(\'"+val+"\')")
 
+    # Stores and prints fetched results from query as list
     rows = c.fetchall()
     for row in rows:
         print(row[0])
