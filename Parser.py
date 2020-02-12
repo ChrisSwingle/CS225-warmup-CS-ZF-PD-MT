@@ -83,12 +83,15 @@ def parse(userInput):
         if((len(splitOnQuotes)==3 ) and ( validateCol(column) and validateKey(key))):
             sys.stdout.write("sqlQuery called with the following parameters:"+ column + "," + key +
             "," + value + "\n")
+            sqlQuery(column, key, value)
         #Validate that inputs are valid
         #Only way to access Artist table is though foreign key, so this will require foreignKey to be "Artist"
         #and the value to be "Title"
         elif((len(splitOnQuotes)==5) and ((foreignKey == "Artist") and (key=="Title") and validateCol(column))):
             sys.stdout.write("sqlQuery called with following paramerters:" + column + "," + foreignKey +
             "," + foreignVal + "," + key + ","+ value+"\n\n")
+            sqlQuery(column, foreignKey, foreignVal)
+
         #If this point is reached, Input is invalid
         else:
             sys.stdout.write("Please enter a valid command. Type: help for a complete list of commands\n"
