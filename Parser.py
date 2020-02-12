@@ -94,7 +94,7 @@ def parse(userInput):
             sys.stdout.write("Please enter a valid command. Type: help for a complete list of commands\n"
             "the syntax of your argument may have been wrong, or too few arguments may have been passed\n")
             getInput()
-    except IndexError:
+    except IndexError or UnboundLocalError:
         sys.stdout.write("Please enter a valid command. Type: help for a complete list of commands\n"
         "the syntax of your argument may have been wrong, or too few arguments may have been passed\n")
         getInput()
