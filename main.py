@@ -70,7 +70,7 @@ def parse(userInput):
 
         key = key.lower()
         key = key.capitalize()
-        sys.stdout.write(column)
+        # sys.stdout.write(column)
         #Adjust for Possible synonyms in column string
         if column == "Song" or column == "Track":
             column = "Title"
@@ -88,7 +88,7 @@ def parse(userInput):
 
         # Validate that first two columns are valid inputs, then query, if not prompt user to input again
         #This makes user of short circuit evaluation
-        sys.stdout.write(column)
+        # sys.stdout.write(column)
         if((len(splitOnQuotes)==3 ) and ( validateCol(column) and validateKey(key))):
             # sys.stdout.write("sqlQuery called with the following parameters:"+ column + "," + key +"," + value + "\n")
             sqlQuery(column, key, value)
