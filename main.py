@@ -4,9 +4,9 @@ import sqlite3
 import csv
 
 
-#GLOBALS
+# GLOBALS
 
-#program continues to run
+# Program continues to run
 globalFlag = True
 
 # Connects to database file
@@ -18,9 +18,9 @@ c = db.cursor()
 
 def main():
 
-    #Tells user how to access commands for program
+    # Tells user how to access commands for program
     sys.stdout.write("Welcome. Type 'help' for a full list of commands and correct syntax\n")
-    #Flag to end program
+    # Flag to end program
     global globalFlag
     while globalFlag:
         getInput()
@@ -39,25 +39,26 @@ def processInput(userInput):
         global globalFlag
         globalFlag = False
 
-    elif userInput.lower() =="load data":
+    elif userInput.lower() == "load data":
         loadData()
     else :
         parse(userInput)
 
 
-#Parse function will break user input into seperate pieces of data to pass to query function:
-#-If search lies within SongsTable, there should be 3 pieces of input:
+# Parse function will break user input into seperate pieces of data to pass to query function:
+# -If search lies within SongsTable, there should be 3 pieces of input:
 #       Column(of song table), Key(specifier to narrow down search), Value(specifies row)
-#-If search lies within ArtistsTable, there should be 4 pieces of input:
+# -If search lies within ArtistsTable, there should be 4 pieces of input:
 #       Column(of artist table), Foreign Key(artist), Foreign Key Value(artist name), Value(Song Title)
 
-#Parser will first split on " " to obtain strings.
+# Parser will first split on " " to obtain strings.
 def parse(userInput):
     try:
-        #Split on Quotes
+        # Split on Quotes
         splitOnQuotes = userInput.split('"')
-        #This logic will be for searches in the Songs Datatable
-        if len(splitOnQuotes)==3:
+
+        # This logic will be for searches in the Songs Datatable
+        if len(splitOnQuotes) == 3:
             #Split on Spaces
             divList1 = splitOnQuotes[0].split()
             column = divList1[0]
@@ -101,7 +102,8 @@ def parse(userInput):
             key = "Title"
         if key == "Singer" or key == "Artists" or key == "Author":
             key = "Artist"
-        #Validate that first two columns are valid inputs, then query, if not prompt user to input again
+
+        # Validate that first two columns are valid inputs, then query, if not prompt user to input again
         #This makes user of short circuit evaluation
         sys.stdout.write(column)
         if((len(splitOnQuotes)==3 ) and ( validateCol(column) and validateKey(key))):
@@ -127,7 +129,7 @@ def parse(userInput):
         getInput()
 
 
-#Functions to validate Column and Key as valid inputs
+# Functions to validate Column and Key as valid inputs
 def validateCol(str):
     validInput =  ["AvgValence","AvgDanceability","Rank", "Title", "Artist", "Genre", "Danceability", "Valence"]
     for i in range(len(validInput)):
@@ -140,7 +142,7 @@ def validateKey(str):
         if (validInput[i] == str):
             return True
     return False
-#Help function to instruct user on operations and proper syntax
+# Help function to instruct user on operations and proper syntax
 def help():
     sys.stdout.write("exit : To exit program\n"
     "help : Full list of commands and correct syntax\n"
