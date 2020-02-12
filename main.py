@@ -69,34 +69,19 @@ def parse(userInput):
             column = column.lower()
             column = column.capitalize()
 
-        # This logic will be for searches in the Artists Datatable
-        elif len(splitOnQuotes) == 5:
-            # Split on spaces
-            divList1=splitOnQuotes[0].split()
-            column = divList1[0]
-            foreignKey = divList1[2]
-            foreignVal = splitOnQuotes[1]
-            divList2=splitOnQuotes[2].split()
-            key = divList2[1]
-            value = splitOnQuotes[3]
-            # Standardize foreignKey
-            foreignKey = foreignKey.lower()
-            foreignKey = foreignKey.capitalize()
-            # Adjust for Synonyms
-            if foreignKey == "Singer" or foreignKey == "Artists" or foreignKey == "Author":
-                foreignKey = "Artist"
-
-        # Standardize capitalization among variables. The key will remain unchanged
         key = key.lower()
         key = key.capitalize()
-
-        # Adjust for Possible synonyms in column string
+        sys.stdout.write(column)
+        #Adjust for Possible synonyms in column string
         if column == "Song" or column == "Track":
             column = "Title"
         if column == "Singer" or column == "Artists" or column == "Author":
             column = "Artist"
-
-        # Adjust for Possible synonyms in key string
+        if column == "Avgvalence" or column == "avgvalence":
+            column = "AvgValence"
+        if column == "AvgDanceability":
+            column = "AvgDanceability"
+        #Adjust for Possible synonyms in key string
         if key == "Song" or key == "Track":
             key = "Title"
         if key == "Singer" or key == "Artists" or key == "Author":
@@ -104,18 +89,10 @@ def parse(userInput):
 
         # Validate that first two columns are valid inputs, then query, if not prompt user to input again
         #This makes user of short circuit evaluation
+        sys.stdout.write(column)
         if((len(splitOnQuotes)==3 ) and ( validateCol(column) and validateKey(key))):
-            sys.stdout.write("sqlQuery called with the following parameters:"+ column + "," + key +
-            "," + value + "\n")
+            # sys.stdout.write("sqlQuery called with the following parameters:"+ column + "," + key +"," + value + "\n")
             sqlQuery(column, key, value)
-
-        # Validate that inputs are valid
-        # Only way to access Artist table is though foreign key, so this will require foreignKey to be "Artist"
-        # and the value to be "Title"
-        elif((len(splitOnQuotes)==5) and ((foreignKey == "Artist") and (key=="Title") and validateCol(column))):
-            sys.stdout.write("sqlQuery called with following paramerters:" + column + "," + foreignKey +
-            "," + foreignVal + "," + key + ","+ value+"\n\n")
-            sqlQuery(column, foreignKey, foreignVal)
 
         #If this point is reached, Input is invalid
         else:
@@ -130,13 +107,13 @@ def parse(userInput):
 
 # Functions to validate Column and Key as valid inputs
 def validateCol(str):
-    validInput =  ["AvgValence","AvgDancability","Rank", "Title", "Artist", "Genre", "Danceability", "Valence"]
+    validInput =  ["AvgValence","AvgDanceability","Rank", "Title", "Artist", "Genre", "Danceability", "Valence"]
     for i in range(len(validInput)):
         if (validInput[i] == str):
             return True
     return False
 def validateKey(str):
-    validInput =  ["Rank" , "Title"]
+    validInput =  ["Rank","Title","Artist","AvgValence", "AvgDanceability"]
     for i in range(len(validInput)):
         if (validInput[i] == str):
             return True
@@ -194,15 +171,19 @@ def loadData():
 # data
 def sqlQuery(column, key, val):
     songCols = ['Rank', 'Title', 'Artist', 'Genre', 'Danceability', 'Valence']
-    artistCols = ['ArtistName', 'AvgDanceability', 'AvgValence']
+    artistCols = ['Artist', 'AvgDanceability', 'AvgValence']
 
     # Determine correct table to search in given user input
     if key in songCols and column in songCols:
         table = "songs"
-        print("determined table songs")
+        # print("determined table songs")
     elif key in artistCols and column in artistCols:
-        table = "artist"
-        print("determined table artist")
+        table = "artists"
+        # print("determined table artist")
+        if column == "Artist":
+            column = "ArtistName"
+        if key == "Artist":
+            key = "ArtistName"
 
     # Convert to valid SQL statement to fetch correct information from database
     f = c.execute("SELECT "+column+" FROM "+table+" WHERE upper("+key+") = upper(\'"+val+"\')")
