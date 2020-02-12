@@ -1,10 +1,9 @@
 import sys
-
 import sqlite3
 import csv
 
 
-# GLOBALS
+#GLOBALS
 
 # Program continues to run
 globalFlag = True
@@ -185,8 +184,12 @@ def sqlQuery(column, key, val):
         if key == "Artist":
             key = "ArtistName"
 
-    # Convert to valid SQL statement to fetch correct information from database
-    f = c.execute("SELECT "+column+" FROM "+table+" WHERE upper("+key+") = upper(\'"+val+"\')")
+    try:
+        # Convert to valid SQL statement to fetch correct information from database
+        f = c.execute("SELECT "+column+" FROM "+table+" WHERE upper("+key+") = upper(\'"+val+"\')")
+
+    except sqlite3.OperationalError:
+        print("Please load data with the \"load data\" before issuing querys")
 
     # Stores and prints fetched results from query as list
     rows = c.fetchall()
