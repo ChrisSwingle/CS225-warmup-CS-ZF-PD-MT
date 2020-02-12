@@ -1,8 +1,6 @@
 import sys
-
 import sqlite3
 import csv
-
 
 #GLOBALS
 
@@ -99,15 +97,13 @@ def parse(userInput):
         #Validate that first two columns are valid inputs, then query, if not prompt user to input again
         #This makes user of short circuit evaluation
         if((len(splitOnQuotes)==3 ) and ( validateCol(column) and validateKey(key))):
-            sys.stdout.write("sqlQuery called with the following parameters:"+ column + "," + key +
-            "," + value + "\n")
+            # sys.stdout.write("sqlQuery called with the following parameters:"+ column + "," + key +"," + value + "\n")
             sqlQuery(column, key, value)
         #Validate that inputs are valid
         #Only way to access Artist table is though foreign key, so this will require foreignKey to be "Artist"
         #and the value to be "Title"
         elif((len(splitOnQuotes)==5) and ((foreignKey == "Artist") and (key=="Title") and validateCol(column))):
-            sys.stdout.write("sqlQuery called with following paramerters:" + column + "," + foreignKey +
-            "," + foreignVal + "," + key + ","+ value+"\n\n")
+            # sys.stdout.write("sqlQuery called with following paramerters:" + column + "," + foreignKey +"," + foreignVal + "," + key + ","+ value+"\n\n")
             sqlQuery(column, foreignKey, foreignVal)
 
         #If this point is reached, Input is invalid
@@ -192,13 +188,17 @@ def sqlQuery(column, key, val):
     # Determine correct table to search in given user input
     if key in songCols and column in songCols:
         table = "songs"
-        print("determined table songs")
+        # print("determined table songs")
     elif key in artistCols and column in artistCols:
         table = "artist"
-        print("determined table artist")
+        # print("determined table artist")
 
-    # Convert to valid SQL statement to fetch correct information from database
-    f = c.execute("SELECT "+column+" FROM "+table+" WHERE upper("+key+") = upper(\'"+val+"\')")
+    try:
+        # Convert to valid SQL statement to fetch correct information from database
+        f = c.execute("SELECT "+column+" FROM "+table+" WHERE upper("+key+") = upper(\'"+val+"\')")
+
+    except sqlite3.OperationalError:
+        print("Please load data with the \"load data\" before issuing querys")
 
     # Stores and prints fetched results from query as list
     rows = c.fetchall()
