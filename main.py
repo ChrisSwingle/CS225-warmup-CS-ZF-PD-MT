@@ -2,9 +2,7 @@ import sys
 import sqlite3
 import csv
 
-
-#GLOBALS
-
+# GLOBALS
 # Program continues to run
 globalFlag = True
 
@@ -16,18 +14,20 @@ c = db.cursor()
 
 
 def main():
-
     # Tells user how to access commands for program
-    sys.stdout.write("Welcome. Type 'help' for a full list of commands and correct syntax\n")
+    sys.stdout.write("Welcome. Type 'help' for a full list of commands and correct syntax.\n")
+    
     # Flag to end program
     global globalFlag
     while globalFlag:
         getInput()
     db.close()
 
+
 def getInput():
     sys.stdout.write(">>")
     processInput(input())
+
 
 def processInput(userInput):
     userInput = userInput.strip()
@@ -43,25 +43,29 @@ def processInput(userInput):
     else :
         parse(userInput)
 
+
 # Parse function will break user input into seperate pieces of data to pass to query function:
 # Parser will first split on " " to obtain strings.
 def parse(userInput):
     try:
         # Split on Quotes
         splitOnQuotes = userInput.split('"')
-        #Split on Spaces
+
+        # Split on Spaces
         divList1 = splitOnQuotes[0].split()
         column = divList1[0]
-        #divList1[1] is "of" which will be disguarded
+
+        # divList1[1] is "of" which will be disguarded
         key = divList1[2]
         value = splitOnQuotes[1]
-        #Standardize capitalization of column and key.
+
+        # Standardize capitalization of column and key.
         column = column.lower()
         column = column.capitalize()
         key = key.lower()
         key = key.capitalize()
 
-        #Adjust for Possible synonyms in column string
+        # Adjust for Possible synonyms in column string
         if column == "Song" or column == "Track":
             column = "Title"
         if column == "Singer" or column == "Artists" or column == "Author":
@@ -70,46 +74,56 @@ def parse(userInput):
             column = "AvgValence"
         if column == "Avgdanceability":
             column = "AvgDanceability"
-        #Adjust for Possible synonyms in key string
+
+        # Adjust for Possible synonyms in key string
         if key == "Song" or key == "Track":
             key = "Title"
         if key == "Singer" or key == "Artists" or key == "Author":
             key = "Artist"
+
         # Validate that first two columns are valid inputs, then query, if not prompt user to input again
-        #This makes user of short circuit evaluation
-        if((len(splitOnQuotes)==3 ) and ( validateCol(column) and validateKey(key))):
+        # This makes user of short circuit evaluation
+        if ((len(splitOnQuotes)==3 ) and (validateCol(column) and validateKey(key))):
             sqlQuery(column, key, value)
-        #If this point is reached, Input is invalid
+
+        # If this point is reached, Input is invalid
         else:
-            sys.stdout.write("Please enter a valid command. Type: help for a complete list of commands\n"
-            "the syntax of your argument may have been wrong, or too few arguments may have been passed\n")
+            sys.stdout.write("Please enter a valid command. Type \"help\" for a complete list of commands.\n"
+                             "The syntax of your argument may have been wrong, or too few arguments may have been passed.\n")
             getInput()
     except IndexError or UnboundLocalError:
-        sys.stdout.write("Please enter a valid command. Type: help for a complete list of commands\n"
-        "the syntax of your argument may have been wrong, or too few arguments may have been passed\n")
+        sys.stdout.write("Please enter a valid command. Type \"help\" for a complete list of commands.\n"
+                         "The syntax of your argument may have been wrong, or too few arguments may have been passed.\n")
         getInput()
 
-# Functions to validate Column and Key as valid inputs
+
+# Function to validate Column as valid input
 def validateCol(str):
     validInput =  ["AvgValence","AvgDanceability","Rank", "Title", "Artist", "Genre", "Danceability", "Valence"]
     for i in range(len(validInput)):
         if (validInput[i] == str):
             return True
     return False
+
+
+# Function to validate Key as valid input
 def validateKey(str):
     validInput =  ["Rank","Title","Artist"]
     for i in range(len(validInput)):
         if (validInput[i] == str):
             return True
     return False
+
+
 # Help function to instruct user on operations and proper syntax
 def help():
-    sys.stdout.write("exit : To exit program\n"
-    "help : Full list of commands and correct syntax\n"
+    sys.stdout.write("exit: To exit program\n"
+    "help: Full list of commands and correct syntax\n"
     "load data: Create database and load data from csv\n\n"
     "Proper Syntax for Querying information about a Title or Artist or Rank: <column> of <key> <value>\n"
-    "Ex : Rank of Title \"Randsom\" - will return the Rank of the song Titled Randsom\n\n "
-    "Ex : AvgDanceability of Artist \"Ed Sheeran\" - will return the Average Danceability of Ed Sheeran\n\n"
+    "Ex: Rank of Title \"Randsom\" - will return the Rank of the song Titled Randsom\n\n "
+    "Ex: AvgDanceability of Artist \"Ed Sheeran\" - will return the Average Danceability of Ed Sheeran\n\n"
+
 
 # loadData() function creates tables and then loads data from csv files into tables
 def loadData():
@@ -149,6 +163,8 @@ def loadData():
                                                   artistsRow[2]))
         db.commit()
         return
+
+
 # sqlQuery() function takes user input, converts to a valid SQL statement, and returns correct
 # data
 def sqlQuery(column, key, val):
@@ -178,6 +194,7 @@ def sqlQuery(column, key, val):
     rows = c.fetchall()
     for row in rows:
         print(row[0])
+
 
 if __name__ == '__main__':
     main()
