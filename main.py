@@ -1,11 +1,8 @@
 import sys
-
 import sqlite3
 import csv
 
-
 # GLOBALS
-
 # Program continues to run
 globalFlag = True
 
@@ -17,18 +14,20 @@ c = db.cursor()
 
 
 def main():
-
     # Tells user how to access commands for program
-    sys.stdout.write("Welcome. Type 'help' for a full list of commands and correct syntax\n")
+    sys.stdout.write("Welcome. Type 'help' for a full list of commands and correct syntax.\n")
+    
     # Flag to end program
     global globalFlag
     while globalFlag:
         getInput()
     db.close()
 
+
 def getInput():
     sys.stdout.write(">>")
     processInput(input())
+
 
 def processInput(userInput):
     userInput = userInput.strip()
@@ -38,55 +37,30 @@ def processInput(userInput):
         sys.stdout.write("Goodbye!")
         global globalFlag
         globalFlag = False
-
     elif userInput.lower() == "load data":
         loadData()
-    else :
+    else:
         parse(userInput)
 
 
 # Parse function will break user input into seperate pieces of data to pass to query function:
-# -If search lies within SongsTable, there should be 3 pieces of input:
-#       Column(of song table), Key(specifier to narrow down search), Value(specifies row)
-# -If search lies within ArtistsTable, there should be 4 pieces of input:
-#       Column(of artist table), Foreign Key(artist), Foreign Key Value(artist name), Value(Song Title)
-
 # Parser will first split on " " to obtain strings.
 def parse(userInput):
     try:
         # Split on Quotes
         splitOnQuotes = userInput.split('"')
 
-        # This logic will be for searches in the Songs Datatable
-        if len(splitOnQuotes) == 3:
-            #Split on Spaces
-            divList1 = splitOnQuotes[0].split()
-            column = divList1[0]
-            #divList1[1] is "of" which will be disguarded
-            key = divList1[2]
-            value = splitOnQuotes[1]
-            #Standardize capitalization of column.
-            column = column.lower()
-            column = column.capitalize()
+        # Split on Spaces
+        divList1 = splitOnQuotes[0].split()
+        column = divList1[0]
 
-        # This logic will be for searches in the Artists Datatable
-        elif len(splitOnQuotes) == 5:
-            # Split on spaces
-            divList1=splitOnQuotes[0].split()
-            column = divList1[0]
-            foreignKey = divList1[2]
-            foreignVal = splitOnQuotes[1]
-            divList2=splitOnQuotes[2].split()
-            key = divList2[1]
-            value = splitOnQuotes[3]
-            # Standardize foreignKey
-            foreignKey = foreignKey.lower()
-            foreignKey = foreignKey.capitalize()
-            # Adjust for Synonyms
-            if foreignKey == "Singer" or foreignKey == "Artists" or foreignKey == "Author":
-                foreignKey = "Artist"
+        # divList1[1] is "of" which will be disguarded
+        key = divList1[2]
+        value = splitOnQuotes[1]
 
-        # Standardize capitalization among variables. The key will remain unchanged
+        # Standardize capitalization of column and key.
+        column = column.lower()
+        column = column.capitalize()
         key = key.lower()
         key = key.capitalize()
 
@@ -95,6 +69,10 @@ def parse(userInput):
             column = "Title"
         if column == "Singer" or column == "Artists" or column == "Author":
             column = "Artist"
+        if column == "Avgvalence" or column == "avgvalence":
+            column = "AvgValence"
+        if column == "Avgdanceability":
+            column = "AvgDanceability"
 
         # Adjust for Possible synonyms in key string
         if key == "Song" or key == "Track":
@@ -103,54 +81,50 @@ def parse(userInput):
             key = "Artist"
 
         # Validate that first two columns are valid inputs, then query, if not prompt user to input again
-        #This makes user of short circuit evaluation
-        if((len(splitOnQuotes)==3 ) and ( validateCol(column) and validateKey(key))):
-            sys.stdout.write("sqlQuery called with the following parameters:"+ column + "," + key +
-            "," + value + "\n")
+        # This makes user of short circuit evaluation
+        if ((len(splitOnQuotes)==3 ) and (validateCol(column) and validateKey(key))):
             sqlQuery(column, key, value)
+        if ((len(splitOnQuotes)==1 ) and (validateCol(column))):
+            sqlQuery(column)
 
-        # Validate that inputs are valid
-        # Only way to access Artist table is though foreign key, so this will require foreignKey to be "Artist"
-        # and the value to be "Title"
-        elif((len(splitOnQuotes)==5) and ((foreignKey == "Artist") and (key=="Title") and validateCol(column))):
-            sys.stdout.write("sqlQuery called with following paramerters:" + column + "," + foreignKey +
-            "," + foreignVal + "," + key + ","+ value+"\n\n")
-            sqlQuery(column, foreignKey, foreignVal)
-
-        #If this point is reached, Input is invalid
+        # If this point is reached, input is invalid
         else:
-            sys.stdout.write("Please enter a valid command. Type: help for a complete list of commands\n"
-            "the syntax of your argument may have been wrong, or too few arguments may have been passed\n")
+            sys.stdout.write("Please enter a valid command. Type \"help\" for a complete list of commands.\n"
+                             "The syntax of your argument may have been wrong, or too few arguments may have been passed.\n")
             getInput()
     except IndexError or UnboundLocalError:
-        sys.stdout.write("Please enter a valid command. Type: help for a complete list of commands\n"
-        "the syntax of your argument may have been wrong, or too few arguments may have been passed\n")
+        sys.stdout.write("Please enter a valid command. Type \"help\" for a complete list of commands.\n"
+                         "The syntax of your argument may have been wrong, or too few arguments may have been passed.\n")
         getInput()
 
 
-# Functions to validate Column and Key as valid inputs
+# Function to validate Column as valid input
 def validateCol(str):
-    validInput =  ["AvgValence","AvgDancability","Rank", "Title", "Artist", "Genre", "Danceability", "Valence"]
+    validInput =  ["AvgValence", "AvgDanceability", "Rank", "Title", "Artist", "Genre", "Danceability", "Valence"]
     for i in range(len(validInput)):
         if (validInput[i] == str):
             return True
     return False
+
+
+# Function to validate Key as valid input
 def validateKey(str):
-    validInput =  ["Rank" , "Title"]
+    validInput =  ["Rank", "Title", "Artist"]
     for i in range(len(validInput)):
         if (validInput[i] == str):
             return True
     return False
+
+
 # Help function to instruct user on operations and proper syntax
 def help():
-    sys.stdout.write("exit : To exit program\n"
-    "help : Full list of commands and correct syntax\n"
+    sys.stdout.write("exit: To exit program\n"
+    "help: Full list of commands and correct syntax\n"
     "load data: Create database and load data from csv\n\n"
-    "Proper Syntax for Querying information about a Title: <column> of <key> <value>\n"
-    "Ex : Rank of Title \"Randsom\" - will return the Rank of the song Titled Randsom\n\n "
-    "Proper Syntax for Querying information about an Artist:\n"
-    "<column> of <foreignKey> <foreignVal> from <key> <value>\n"
-    "Ex : AvgValence of Artist\"Ed Sheeran\" from Title \"Shape of You\"- will the Average Valence of Ed Sheeran\n")
+    "Proper Syntax for Querying information about a Title or Artist or Rank: <column> of <key> <value>\n"
+    "Ex: Rank of Title \"Randsom\" - will return the Rank of the song Titled Randsom\n\n "
+    "Ex: AvgDanceability of Artist \"Ed Sheeran\" - will return the Average Danceability of Ed Sheeran\n\n"
+
 
 # loadData() function creates tables and then loads data from csv files into tables
 def loadData():
@@ -158,9 +132,8 @@ def loadData():
     try:
         c.execute('''DROP TABLE Songs''')
         c.execute('''DROP TABLE Artists''')
-    finally:
         db.commit()
-
+    finally:
         # Creates tables
         c.execute('''CREATE TABLE  Songs
                       (Rank real PRIMARY KEY, Title text, Artist text, Genre text,
@@ -189,28 +162,65 @@ def loadData():
                               VALUES (?,?,?)''', (artistsRow[0], artistsRow[1],
                                                   artistsRow[2]))
         db.commit()
-        return
+
+
 # sqlQuery() function takes user input, converts to a valid SQL statement, and returns correct
 # data
 def sqlQuery(column, key, val):
     songCols = ['Rank', 'Title', 'Artist', 'Genre', 'Danceability', 'Valence']
-    artistCols = ['ArtistName', 'AvgDanceability', 'AvgValence']
+    artistCols = ['Artist', 'AvgDanceability', 'AvgValence']
 
     # Determine correct table to search in given user input
     if key in songCols and column in songCols:
         table = "songs"
-        print("determined table songs")
+        # print("determined table songs")
     elif key in artistCols and column in artistCols:
-        table = "artist"
-        print("determined table artist")
+        table = "artists"
+        # print("determined table artist")
+        if column == "Artist":
+            column = "ArtistName"
+        if key == "Artist":
+            key = "ArtistName"
 
-    # Convert to valid SQL statement to fetch correct information from database
-    f = c.execute("SELECT "+column+" FROM "+table+" WHERE upper("+key+") = upper(\'"+val+"\')")
+    try:
+        # Convert to valid SQL statement to fetch correct information from database
+        f = c.execute("SELECT "+column+" FROM "+table+" WHERE upper("+key+") = upper(\'"+val+"\')")
+
+    except sqlite3.OperationalError:
+        print("Please load data by typing \"load data\" before issuing querys.")
 
     # Stores and prints fetched results from query as list
     rows = c.fetchall()
     for row in rows:
         print(row[0])
+
+
+def sqlQuery(column):
+    songCols = ['Rank', 'Title', 'Artist', 'Genre', 'Danceability', 'Valence']
+    artistCols = ['Artist', 'AvgDanceability', 'AvgValence']
+
+    # Determine correct table to search in given user input
+    if column in songCols:
+        table = "songs"
+        # print("determined table songs")
+    elif column in artistCols:
+        table = "artists"
+        # print("determined table artist")
+        if column == "Artist":
+            column = "ArtistName"
+
+    try:
+        # Convert to valid SQL statement to fetch correct information from database
+        f = c.execute("SELECT "+column+" FROM "+table)
+
+    except sqlite3.OperationalError:
+        print("Please load data by typing \"load data\" before issuing querys.")
+
+    # Stores and prints fetched results from query as list
+    rows = c.fetchall()
+    for row in rows:
+        print(row[0])
+
 
 if __name__ == '__main__':
     main()
