@@ -37,7 +37,6 @@ def processInput(userInput):
         sys.stdout.write("Goodbye!")
         global globalFlag
         globalFlag = False
-
     elif userInput.lower() == "load data":
         loadData()
     else :
@@ -99,7 +98,7 @@ def parse(userInput):
 
 # Function to validate Column as valid input
 def validateCol(str):
-    validInput =  ["AvgValence","AvgDanceability","Rank", "Title", "Artist", "Genre", "Danceability", "Valence"]
+    validInput =  ["AvgValence", "AvgDanceability", "Rank", "Title", "Artist", "Genre", "Danceability", "Valence"]
     for i in range(len(validInput)):
         if (validInput[i] == str):
             return True
@@ -108,7 +107,7 @@ def validateCol(str):
 
 # Function to validate Key as valid input
 def validateKey(str):
-    validInput =  ["Rank","Title","Artist"]
+    validInput =  ["Rank", "Title", "Artist"]
     for i in range(len(validInput)):
         if (validInput[i] == str):
             return True
