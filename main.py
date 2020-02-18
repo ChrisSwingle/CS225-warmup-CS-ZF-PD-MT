@@ -130,9 +130,8 @@ def loadData():
     try:
         c.execute('''DROP TABLE Songs''')
         c.execute('''DROP TABLE Artists''')
-    finally:
         db.commit()
-
+    finally:
         # Creates tables
         c.execute('''CREATE TABLE  Songs
                       (Rank real PRIMARY KEY, Title text, Artist text, Genre text,
