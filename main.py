@@ -39,7 +39,7 @@ def processInput(userInput):
         globalFlag = False
     elif userInput.lower() == "load data":
         loadData()
-    else :
+    else:
         parse(userInput)
 
 
@@ -85,7 +85,7 @@ def parse(userInput):
         if ((len(splitOnQuotes)==3 ) and (validateCol(column) and validateKey(key))):
             sqlQuery(column, key, value)
 
-        # If this point is reached, Input is invalid
+        # If this point is reached, input is invalid
         else:
             sys.stdout.write("Please enter a valid command. Type \"help\" for a complete list of commands.\n"
                              "The syntax of your argument may have been wrong, or too few arguments may have been passed.\n")
@@ -161,7 +161,6 @@ def loadData():
                               VALUES (?,?,?)''', (artistsRow[0], artistsRow[1],
                                                   artistsRow[2]))
         db.commit()
-        return
 
 
 # sqlQuery() function takes user input, converts to a valid SQL statement, and returns correct

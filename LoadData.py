@@ -49,7 +49,6 @@ def loadData():
                               VALUES (?,?,?)''', (artistsRow[0], artistsRow[1],
                                                   artistsRow[2]))
         db.commit()
-        return
 
     
 # sqlQuery() function takes user input, converts to a valid SQL statement, and returns correct
