@@ -206,6 +206,9 @@ def sqlQuery(column, key, val):
         for row in rows:
             print(row[0])
 
+        if len(rows) == 0:
+            print("Query returned no results, please try a different query")
+
     except sqlite3.OperationalError:
         print("Please load data with the \"load data\" before issuing querys")
 
