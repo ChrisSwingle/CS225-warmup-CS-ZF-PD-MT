@@ -206,7 +206,8 @@ def sqlQuery(column, key, val):
 
     except sqlite3.OperationalError:
         print("Please load data with the \"load data\" before issuing querys")
-
+    except Exception:
+        print("Please select valid column! Type 'help' for a full list of commands")
 
 if __name__ == '__main__':
     main()
