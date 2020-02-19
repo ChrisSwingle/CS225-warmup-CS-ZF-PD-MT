@@ -12,7 +12,7 @@ db = sqlite3.connect('SongsArtists.db')
 # Creates database cursor object
 c = db.cursor()
 
-
+#main function
 def main():
     # Tells user how to access commands for program
     sys.stdout.write("Welcome. Type 'help' for a full list of commands and correct syntax.\n")
@@ -23,12 +23,12 @@ def main():
         getInput()
     db.close()
 
-
+#gets user input and passes to processInput()
 def getInput():
     sys.stdout.write(">>")
     processInput(input())
 
-
+#processes user input and looks for preset commands before sending to parser
 def processInput(userInput):
     userInput = userInput.strip()
     if userInput.lower() == "help":
@@ -39,6 +39,8 @@ def processInput(userInput):
         globalFlag = False
     elif userInput.lower() == "load data":
         loadData()
+    elif userInput.lower() == "join data":
+        joinSql()
     else:
         parse(userInput)
 
@@ -161,6 +163,19 @@ def loadData():
                                                   artistsRow[2]))
         db.commit()
 
+#SQL functionality for joining the two tables, called by issuing "join data"
+def joinSql():
+    try:
+        # Valid SQL statement to fetch correct information from database
+        f = c.execute("SELECT Songs.Rank, Songs.Artist, Songs.Title, Artists.AvgDanceability, Artists.AvgValence FROM Artists INNER JOIN Songs ON Artists.ArtistName=Songs.Artist ORDER BY Songs.Rank ASC")
+        # Stores and prints fetched results from query as list
+        rows = c.fetchall()
+        for row in rows:
+            print(row)
+
+    except sqlite3.OperationalError as e:
+        print("Please load data with the \"load data\" before issuing querys ")
+
 
 # sqlQuery() function takes user input, converts to a valid SQL statement, and returns correct
 # data
@@ -183,14 +198,13 @@ def sqlQuery(column, key, val):
     try:
         # Convert to valid SQL statement to fetch correct information from database
         f = c.execute("SELECT "+column+" FROM "+table+" WHERE upper("+key+") = upper(\'"+val+"\')")
+        # Stores and prints fetched results from query as list
+        rows = c.fetchall()
+        for row in rows:
+            print(row[0])
 
     except sqlite3.OperationalError:
         print("Please load data with the \"load data\" before issuing querys")
-
-    # Stores and prints fetched results from query as list
-    rows = c.fetchall()
-    for row in rows:
-        print(row[0])
 
 
 if __name__ == '__main__':
