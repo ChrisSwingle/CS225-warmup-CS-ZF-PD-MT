@@ -121,6 +121,7 @@ def help():
     sys.stdout.write("exit: To exit program\n"
     "help: Full list of commands and correct syntax\n"
     "load data: Create database and load data from csv\n\n"
+    "join data: Join data from the songs and artists table to view relevant information\n\n"
     "Proper Syntax for Querying information about a Title or Artist or Rank: <column> of <key> <value>\n"
     "Ex: Rank of Title \"Randsom\" - will return the Rank of the song Titled Randsom\n\n "
     "Ex: AvgDanceability of Artist \"Ed Sheeran\" - will return the Average Danceability of Ed Sheeran\n\n")
