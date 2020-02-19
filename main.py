@@ -16,7 +16,7 @@ c = db.cursor()
 def main():
     # Tells user how to access commands for program
     sys.stdout.write("Welcome. Type 'help' for a full list of commands and correct syntax.\n")
-    
+
     # Flag to end program
     global globalFlag
     while globalFlag:
@@ -121,7 +121,7 @@ def help():
     "load data: Create database and load data from csv\n\n"
     "Proper Syntax for Querying information about a Title or Artist or Rank: <column> of <key> <value>\n"
     "Ex: Rank of Title \"Randsom\" - will return the Rank of the song Titled Randsom\n\n "
-    "Ex: AvgDanceability of Artist \"Ed Sheeran\" - will return the Average Danceability of Ed Sheeran\n\n"
+    "Ex: AvgDanceability of Artist \"Ed Sheeran\" - will return the Average Danceability of Ed Sheeran\n\n")
 
 
 # loadData() function creates tables and then loads data from csv files into tables
