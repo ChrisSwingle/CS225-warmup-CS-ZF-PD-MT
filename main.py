@@ -118,12 +118,13 @@ def validateKey(str):
 
 # Help function to instruct user on operations and proper syntax
 def help():
+    print("Commands:")
     sys.stdout.write("exit: To exit program\n"
     "help: Full list of commands and correct syntax\n"
-    "load data: Create database and load data from csv\n\n"
+    "load data: Create database and load data from csv\n"
     "join data: Join data from the songs and artists table to view relevant information\n\n"
-    "Proper Syntax for Querying information about a Title or Artist or Rank: <column> of <key> <value>\n"
-    "Ex: Rank of Title \"Randsom\" - will return the Rank of the song Titled Randsom\n\n "
+    "Syntax:\nProper Syntax for Querying information about a Title or Artist or Rank: <column> of <key> <value>\n"
+    "Ex: Rank of Title \"Randsom\" - will return the Rank of the song Titled Randsom\n\n"
     "Ex: AvgDanceability of Artist \"Ed Sheeran\" - will return the Average Danceability of Ed Sheeran\n\n")
 
 
@@ -171,6 +172,7 @@ def joinSql():
         f = c.execute("SELECT Songs.Rank, Songs.Artist, Songs.Title, Artists.AvgDanceability, Artists.AvgValence FROM Artists INNER JOIN Songs ON Artists.ArtistName=Songs.Artist ORDER BY Songs.Rank ASC")
         # Stores and prints fetched results from query as list
         rows = c.fetchall()
+        print("Joined data (Rank, Artist, Title, AvgDanceability of Artist, AvgValence of Artist)")
         for row in rows:
             print(row)
 
