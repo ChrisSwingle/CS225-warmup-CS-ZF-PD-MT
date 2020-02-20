@@ -12,7 +12,8 @@ db = sqlite3.connect('SongsArtists.db')
 # Creates database cursor object
 c = db.cursor()
 
-#main function
+
+# Main function
 def main():
     # Tells user how to access commands for program
     sys.stdout.write("Welcome. Type 'help' for a full list of commands and correct syntax.\n")
@@ -23,12 +24,14 @@ def main():
         getInput()
     db.close()
 
-#gets user input and passes to processInput()
+
+# Gets user input and passes to processInput()
 def getInput():
     sys.stdout.write(">>")
     processInput(input())
 
-#processes user input and looks for preset commands before sending to parser
+
+# Processes user input and looks for preset commands before sending to parser
 def processInput(userInput):
     userInput = userInput.strip()
     if userInput.lower() == "help":
@@ -84,17 +87,17 @@ def parse(userInput):
 
         # Validate that first two columns are valid inputs, then query, if not prompt user to input again
         # This makes user of short circuit evaluation
-        if ((len(splitOnQuotes)==3 ) and (validateCol(column) and validateKey(key))):
+        if ((len(splitOnQuotes)==3) and (validateCol(column) and validateKey(key))):
             sqlQuery(column, key, value)
 
         # If this point is reached, input is invalid
         else:
             sys.stdout.write("Please enter a valid command. Type \"help\" for a complete list of commands.\n"
-                             "The syntax of your argument may have been wrong, or too few arguments may have been passed.\n")
+                             "The syntax of your argument may have been wrong.\n")
             getInput()
     except IndexError or UnboundLocalError:
         sys.stdout.write("Please enter a valid command. Type \"help\" for a complete list of commands.\n"
-                         "The syntax of your argument may have been wrong, or too few arguments may have been passed.\n")
+                         "The syntax of your argument may have been wrong.\n")
         getInput()
 
 
@@ -123,9 +126,9 @@ def help():
     "help: Full list of commands and correct syntax\n"
     "load data: Create database and load data from csv\n"
     "join data: Join data from the songs and artists table to view relevant information\n\n"
-    "Syntax:\nProper Syntax for Querying information about a Title or Artist or Rank: <column> of <key> <value>\n"
-    "Ex: Rank of Title \"Randsom\" - will return the Rank of the song Titled Randsom\n\n"
-    "Ex: AvgDanceability of Artist \"Ed Sheeran\" - will return the Average Danceability of Ed Sheeran\n\n")
+    "Syntax:\nProper Syntax for Querying information about a Title or Artist: <column> of <key> <value>\n"
+    "Ex: Rank of Title \"Randsom\" - will return the Rank of the song Titled 'Randsom'\n"
+    "Ex: AvgDanceability of Artist \"Ed Sheeran\" - will return the Average Danceability of Ed Sheeran's songs\n\n")
 
 
 # loadData() function creates tables and then loads data from csv files into tables
@@ -155,6 +158,7 @@ def loadData():
                               VALUES(?,?,?,?,?,?)''', (songsRow[0], songsRow[1],
                                                        songsRow[2], songsRow[3],
                                                        songsRow[4], songsRow[5]))
+            print("")
         with open('Artists.csv') as artistsDataFile:
             artistsReader = csv.reader(artistsDataFile)
             for artistsRow in artistsReader:
@@ -163,25 +167,29 @@ def loadData():
                                                   AvgValence)
                               VALUES (?,?,?)''', (artistsRow[0], artistsRow[1],
                                                   artistsRow[2]))
+            print("")
         db.commit()
 
-#SQL functionality for joining the two tables, called by issuing "join data"
+
+# SQL functionality for joining the two tables, called by issuing "join data"
 def joinSql():
     try:
         # Valid SQL statement to fetch correct information from database
-        f = c.execute("SELECT Songs.Rank, Songs.Artist, Songs.Title, Artists.AvgDanceability, Artists.AvgValence FROM Artists INNER JOIN Songs ON Artists.ArtistName=Songs.Artist ORDER BY Songs.Rank ASC")
+        c.execute('''SELECT Songs.Rank, Songs.Artist, Songs.Title, Artists.AvgDanceability, 
+                  Artists.AvgValence FROM Artists INNER JOIN Songs ON Artists.ArtistName=Songs.Artist ORDER BY Songs.Rank ASC''')
+
         # Stores and prints fetched results from query as list
         rows = c.fetchall()
         print("Joined data (Rank, Artist, Title, AvgDanceability of Artist, AvgValence of Artist)")
         for row in rows:
-            print(row)
-
+            print(row) 
+        print("")
     except sqlite3.OperationalError as e:
-        print("Please load data with the \"load data\" before issuing querys ")
+        print("Please load data with the \"load data\" before issuing querys.")
 
 
-# sqlQuery() function takes user input, converts to a valid SQL statement, and returns correct
-# data
+# sqlQuery() function takes 3 arguements of user input, converts to a valid SQL statement, 
+# and returns correct data
 def sqlQuery(column, key, val):
     songCols = ['Rank', 'Title', 'Artist', 'Genre', 'Danceability', 'Valence']
     artistCols = ['Artist', 'AvgDanceability', 'AvgValence']
@@ -189,10 +197,8 @@ def sqlQuery(column, key, val):
     # Determine correct table to search in given user input
     if key in songCols and column in songCols:
         table = "songs"
-        # print("determined table songs")
     elif key in artistCols and column in artistCols:
         table = "artists"
-        # print("determined table artist")
         if column == "Artist":
             column = "ArtistName"
         if key == "Artist":
@@ -200,19 +206,21 @@ def sqlQuery(column, key, val):
 
     try:
         # Convert to valid SQL statement to fetch correct information from database
-        f = c.execute("SELECT "+column+" FROM "+table+" WHERE upper("+key+") = upper(\'"+val+"\')")
+        c.execute("SELECT "+column+" FROM "+table+" WHERE upper("+key+") = upper(\'"+val+"\')")
+
         # Stores and prints fetched results from query as list
         rows = c.fetchall()
         for row in rows:
             print(row[0])
-
+        print("")
         if len(rows) == 0:
-            print("Query returned no results, please try a different query")
+            print("Query returned no results, please try a different query.")
 
     except sqlite3.OperationalError:
-        print("Please load data with the \"load data\" before issuing querys")
+        print("Please load data with the \"load data\" before issuing querys.")
     except Exception:
-        print("Please select valid column! Type 'help' for a full list of commands")
+        print("Please select valid column. Type 'help' for a full list of commands.")
+
 
 if __name__ == '__main__':
     main()
